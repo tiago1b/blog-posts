@@ -1,0 +1,26 @@
+<?php /* application/views/scripts/users/create.phtml */ ?>
+
+<h1>Cadastrar de usu&aacute;rio</h1>
+
+<p>
+<a href="<?php echo $this->url(array(
+    'controller' => 'users',
+    'action'     => 'list')); ?>" title="Listar usu&aacute;rios">Listar usu&aacute;rios</a>
+</p>
+
+<?php if ( isset($this->message) ) echo $this->message; ?>
+
+<form action="/users/create" method="post">
+    <label>
+        Nome:&nbsp;
+        <input type="text" value="" name="name" />
+    </label>
+    <br />
+    <label>
+        Email:&nbsp;
+        <input type="text" value="" name="email" />
+    </label>
+    <br />
+    <input type="submit" value="Cadastrar" name="Cadastrar" />
+</form>
+
