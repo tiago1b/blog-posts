@@ -10,17 +10,4 @@
 
 <?php if ( isset($this->message) ) echo $this->message; ?>
 
-<form action="/users/create" method="post">
-    <label>
-        Nome:&nbsp;
-        <input type="text" value="" name="name" />
-    </label>
-    <br />
-    <label>
-        Email:&nbsp;
-        <input type="text" value="" name="email" />
-    </label>
-    <br />
-    <input type="submit" value="Cadastrar" name="Cadastrar" />
-</form>
-
+<?php echo $this->form; ?>

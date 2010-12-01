@@ -10,19 +10,6 @@
  
 <?php if ( isset($this->message) ) echo $this->message; ?>
  
-<?php if ( isset($this->user) ) : ?>
-    <form action="/users/edit" method="post">
-        <input type="hidden" name="id" value="<?php echo $this->user->id; ?>" />
-        <label>
-            Nome:&nbsp;
-            <input type="text" value="<?php echo $this->escape($this->user->name); ?>" name="name" />
-        </label>
-        <br />
-        <label>
-            Email:&nbsp;
-            <input type="text" value="<?php echo $this->escape($this->user->email); ?>" name="email" />
-        </label>
-        <br />
-        <input type="submit" value="Atualizar" name="Atualizar" />
-    </form>
+<?php if ( isset($this->form) ) : ?>
+    <?php echo $this->form; ?>
 <?php endif; ?>

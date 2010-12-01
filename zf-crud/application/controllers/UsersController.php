@@ -55,32 +55,24 @@ class UsersController extends Zend_Controller_Action
      */
     public function createAction()
     {
+        $form = new Application_Form_User();
+        $form->setAction('/users/create');
+
         if ( $this->_request->isPost() )
         {
             $data = array(
                 'name'  => $this->_request->getPost('name'),
                 'email' => $this->_request->getPost('email')
             );
- 
-            if ( ! $this->_model->isUniqueName($data['name']) )
+
+            if ( $form->isValid($data) )
             {
-                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
-                    cadastrado com o nome "%s"', $data['name']);
- 
-                return false;
+                $this->_model->insert($data);
+                $this->view->message = "Usu&aacute;rio cadastrado com sucesso.";
             }
- 
-            if ( ! $this->_model->isUniqueEmail($data['email']) )
-            {
-                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
-                    cadastrado com o email "%s"', $data['email']);
- 
-                return false;
-            }
- 
-            $this->_model->insert($data);
-            $this->view->message = "Usu&aacute;rio cadastrado com sucesso.";
         }
+
+        $this->view->form = $form;
     }
  
     /**
@@ -94,39 +86,35 @@ class UsersController extends Zend_Controller_Action
      */
     public function editAction()
     {
-        $user_id = (int) $this->_getParam('id');
-        $result  = $this->_model->find($user_id);
-        if ( count($result) == 0 )
+        $id      = (int) $this->_getParam('id');
+        $result  = $this->_model->find($id);
+        $data    = $result->current();
+
+        if ( null === $data )
         {
             $this->view->message = "Usu&aacute;rio n&atilde;o encontrado!";
+            return false;
         }
- 
-        $this->view->user = $result->current();
- 
-        if ( $this->getRequest()->isPost() )
+
+        $form = new Application_Form_User();
+        $form->setAction(sprintf('/users/edit/id/%d', $id));
+        $form->populate($data->toArray());
+
+        if ( $this->_request->isPost() )
         {
-            $data = $this->getRequest()->getPost();
- 
-            if ( ! $this->_model->isUniqueName($data['name'], $data['id']) )
+            $data = array(
+                'name'  => $this->_request->getPost('name'),
+                'email' => $this->_request->getPost('email')
+            );
+
+            if ( $form->isValid($data) )
             {
-                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
-                    cadastrado com o nome "%s"', $data['name']);
- 
-                return false;
+                $this->_model->update($data, "id = $id");
+                $this->_redirect('/users');
             }
- 
-            if ( ! $this->_model->isUniqueEmail($data['email'], $data['id']) )
-            {
-                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
-                    cadastrado com o email "%s"', $data['email']);
- 
-                return false;
-            }
- 
-            $this->_update($data);
-            $this->_redirect('/users');
         }
- 
+
+        $this->view->form = $form; 
     }
  
     /**
@@ -148,23 +136,5 @@ class UsersController extends Zend_Controller_Action
         $where = $this->_model->getAdapter()->quoteInto('id = ?', $id);
         $this->_model->delete($where);
         $this->_redirect('users/list');
-    }
- 
-    /**
-     * Executa a atualização do usuário de acordo com os parâmetros
-     *
-     * @param  array   $data Dados para atualizar
-     * @return integer       Numero de linhas atualizadas
-     */
-    private function _update(array $data)
-    {
-        $where = $this->_model->getAdapter()->quoteInto('id = ?', (int) $data['id']);
-        $data = array(
-            'name'  => $data['name'],
-            'email' => $data['email']
-        );
- 
-        return $this->_model->update($data, $where);
-    }
- 
+    } 
 }
