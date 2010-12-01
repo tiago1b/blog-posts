@@ -12,25 +12,6 @@ class User extends Zend_Db_Table_Abstract
     protected $_name = 'users';
 
     /**
-     * Primary key field
-     *
-     * @var string
-     */
-    protected $_primary = 'id';
-
-    /**
-     * Table columns
-     *
-     * @access protected
-     * @var    array
-     */
-    protected $_cols = array(
-        'id',
-        'name',
-        'email'
-    );
-
-    /**
      * O nome é único?
      *
      * Verifica se $name é único na base de dados
