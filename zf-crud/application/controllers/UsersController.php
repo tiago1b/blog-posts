@@ -10,7 +10,7 @@ class UsersController extends Zend_Controller_Action
      * @var    User
      */
     private $_model;
-
+ 
     /**
      * Initialize object
      *
@@ -23,9 +23,9 @@ class UsersController extends Zend_Controller_Action
         parent::init();
         $this->_model = new User();
     }
-
+ 
     /**
-     * Call list action
+     * Apenas chama a action 'list'
      *
      * @return void
      */
@@ -33,9 +33,9 @@ class UsersController extends Zend_Controller_Action
     {
         $this->_forward('list');
     }
-
+ 
     /**
-     * List all users
+     * Exibe uma lista com todos os usuários registrados
      *
      * @return void
      */
@@ -43,13 +43,13 @@ class UsersController extends Zend_Controller_Action
     {
         $this->view->users = $this->_model->fetchAll();
     }
-
+ 
     /**
-     * Create new user
+     * Exibe o form para cadastro de usuário.
      *
-     * Create new user in POST request
-     * Show error message if the name or email is not unique in database
-     * and return false
+     * Registra um novo usuário quando a requisição for POST
+     * Caso o nome ou o email informado não forem únicos na tabela, passaremos
+     * uma mensagem de erro para a view e não registramos este usuário.
      *
      * @return boolean|void
      */
@@ -61,37 +61,110 @@ class UsersController extends Zend_Controller_Action
                 'name'  => $this->_request->getPost('name'),
                 'email' => $this->_request->getPost('email')
             );
-
+ 
             if ( ! $this->_model->isUniqueName($data['name']) )
             {
-                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio 
+                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
                     cadastrado com o nome "%s"', $data['name']);
-
+ 
                 return false;
             }
-
+ 
             if ( ! $this->_model->isUniqueEmail($data['email']) )
             {
-                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio 
+                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
                     cadastrado com o email "%s"', $data['email']);
-
+ 
                 return false;
             }
-
+ 
             $this->_model->insert($data);
             $this->view->message = "Usu&aacute;rio cadastrado com sucesso.";
         }
     }
-
+ 
+    /**
+     * Exibe o form para edição de usuário.
+     *
+     * Executa o método '_update' quando a requisição for POST
+     * Caso o nome ou o email informado não forem únicos, passaremos
+     * uma mensagem de erro para a view e não atualizaremos este usuário.
+     *
+     * @return void
+     */
     public function editAction()
     {
-        // ...
+        $user_id = (int) $this->_getParam('id');
+        $result  = $this->_model->find($user_id);
+        if ( count($result) == 0 )
+        {
+            $this->view->message = "Usu&aacute;rio n&atilde;o encontrado!";
+        }
+ 
+        $this->view->user = $result->current();
+ 
+        if ( $this->getRequest()->isPost() )
+        {
+            $data = $this->getRequest()->getPost();
+ 
+            if ( ! $this->_model->isUniqueName($data['name'], $data['id']) )
+            {
+                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
+                    cadastrado com o nome "%s"', $data['name']);
+ 
+                return false;
+            }
+ 
+            if ( ! $this->_model->isUniqueEmail($data['email'], $data['id']) )
+            {
+                $this->view->message = sprintf('J&aacute; exite um usu&aacute;rio
+                    cadastrado com o email "%s"', $data['email']);
+ 
+                return false;
+            }
+ 
+            $this->_update($data);
+            $this->_redirect('/users');
+        }
+ 
     }
-
-    private function _update()
+ 
+    /**
+     * Deleta um registro e redireciona para 'users/list'
+     * Caso não seja informado nenhum ID pela url,
+     * o usuário será redirecionado para 'users'
+     *
+     * @return void
+     */
+    public function deleteAction()
     {
-        // ...
+        // verificamos se realmente foi informado algum ID
+        if ( $this->_hasParam('id') == false )
+        {
+            $this->_redirect('users');
+        }
+ 
+        $id = (int) $this->_getParam('id');
+        $where = $this->_model->getAdapter()->quoteInto('id = ?', $id);
+        $this->_model->delete($where);
+        $this->_redirect('users/list');
     }
-
-
+ 
+    /**
+     * Executa a atualização do usuário de acordo com os parâmetros
+     *
+     * @param  array   $data Dados para atualizar
+     * @return integer       Numero de linhas atualizadas
+     */
+    private function _update(array $data)
+    {
+        $where = $this->_model->getAdapter()->quoteInto('id = ?', (int) $data['id']);
+        $data = array(
+            'name'  => $data['name'],
+            'email' => $data['email']
+        );
+ 
+        return $this->_model->update($data, $where);
+    }
+ 
 }

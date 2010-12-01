@@ -1,13 +1,13 @@
 <?php /* application/views/scripts/users/list.phtml */ ?>
-
+ 
 <h1>Lista de usu&aacute;rios</h1>
-
+ 
 <p>
 <a href="<?php echo $this->url(array(
     'controller' => 'users',
     'action'     => 'create')); ?>" title="Incluir novo usu&aacute;rio">Incluir novo usu&aacute;rio</a>
 </p>
-
+ 
 <table cellspacing="1" cellpadding="1" border="1" width="500">
     <thead>
         <tr>
@@ -24,10 +24,17 @@
                 <td><?php echo $this->escape($user->name); ?></td>
                 <td><?php echo $this->escape($user->email); ?></td>
                 <td>
-                   <a href="javascript:void(0);" title="Apagar">Apagar</a> 
+                    <a href="<?php echo $this->url(array(
+                                       'controller' => 'users',
+                                       'action'     => 'edit',
+                                       'id'         => $user->id)); ?>" title="Editar">Editar</a>
+                    &nbsp;
+                    <a href="<?php echo $this->url(array(
+                                       'controller' => 'users',
+                                       'action'     => 'delete',
+                                       'id'         => $user->id)); ?>" title="Apagar">Apagar</a>
                 </td>
             </tr>
         <?php endforeach; ?>
      </tbody>
 </table>
-

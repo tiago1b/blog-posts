@@ -31,36 +31,52 @@ class User extends Zend_Db_Table_Abstract
     );
 
     /**
-     * Is unique name?
+     * O nome é único?
      *
-     * Check if $name is unique name in database
+     * Verifica se $name é único na base de dados
+     * Caso $id seja informado, ele será usado na cláusula where
+     * para selecionar os registros diferentes a este $id.
      *
-     * @param  string $name
+     * @param  string  $name
+     * @param  integer $id [Opcional]
      * @return boolean
      */
-    public function isUniqueName($name)
+    public function isUniqueName($name, $id = null)
     {
         $select = $this->select();
         $select->from($this->_name, 'COUNT(*) AS num')
                ->where('name = ?', $name);
-        
+ 
+        if ( $id != null )
+        {
+            $select->where('id != ?', (int) $id);
+        }
+ 
         return ($this->fetchRow($select)->num == 0) ? true : false;
     }
-
+ 
     /**
-     * Is unique email?
+     * O email é único?
      *
-     * Check if $email is unique email in database
+     * Verifica se $email é único na base de dados
+     * Caso $id seja informado, ele será usado na cláusula where
+     * para selecionar os registros diferentes a este $id.
      *
-     * @param  string $name
+     * @param  string  $email
+     * @param  integer $id [Opcional]
      * @return boolean
      */
-    public function isUniqueEmail($email)
+    public function isUniqueEmail($email, $id = null)
     {
         $select = $this->select();
         $select->from($this->_name, 'COUNT(*) AS num')
                ->where('email = ?', $email);
-        
+ 
+        if ( $id != null )
+        {
+            $select->where('id != ?', (int) $id);
+        }
+ 
         return ($this->fetchRow($select)->num == 0) ? true : false;
     }
 
