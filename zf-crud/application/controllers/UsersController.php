@@ -78,11 +78,11 @@ class UsersController extends Zend_Controller_Action
     /**
      * Exibe o form para edição de usuário.
      *
-     * Executa o método '_update' quando a requisição for POST
-     * Caso o nome ou o email informado não forem únicos, passaremos
-     * uma mensagem de erro para a view e não atualizaremos este usuário.
+     * Exibe o form para editar o usuário a partir do ID passado pela URL
+     * Se o usuário não existir é exibo uma mensagem de erro e não apresentamos
+     * o form.
      *
-     * @return void
+     * @return void|false
      */
     public function editAction()
     {
@@ -97,8 +97,7 @@ class UsersController extends Zend_Controller_Action
         }
 
         $form = new Application_Form_User();
-        $form->setAction(sprintf('/users/edit/id/%d', $id));
-        $form->populate($data->toArray());
+        $form->setAsEditForm($data);
 
         if ( $this->_request->isPost() )
         {
