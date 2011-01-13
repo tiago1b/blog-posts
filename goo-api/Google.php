@@ -15,7 +15,7 @@ class Google
      *
      * @var string
      */
-    const GOOGLE_API_KEY = 'AIzaSyC8Nojxz1DOb73N_ELikppQR0T8vcuC78U';
+    const GOOGLE_API_KEY = '<your_key>';
 
     /**
      * URL de acesso a API
